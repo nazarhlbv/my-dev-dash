@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="uk" 
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevDash Pro - Дашборд розробника</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #09090b 0%, #361378 100%);
+            color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        .sidebar {
+    background: rgba(255, 255, 255, 0.03); 
+    
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    
+    border-right: 1px solid rgba(255, 255, 255, 0.1); 
+    
+    padding: 20px;
+    height: 100vh; /* Висота на весь екран */
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    
+    padding: 20px;
+    box-sizing: border-box;
+
+    border-radius: 24px; 
+    
+    margin: 20px 0 20px 20px; 
+    height: calc(100vh - 40px);
+}
+.widget-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px; /* Красиві заокруглені кути */
+    padding: 20px;
+    
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
+    
+    transition: all 0.3s ease; 
+}
+
+.widget-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+.app-container {
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Сайдбар 250px, інше - весь вільний простір */
+    min-height: 100vh;
+}
+
+.main-wrapper {
+    padding: 30px;
+    box-sizing: border-box;
+}
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Робимо пошук не надто довгим */
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px; /* Відступ від лівого краю */
+    top: 50%;
+    transform: translateY(-50%); /* Ідеально центруємо по вертикалі */
+    font-size: 1.1rem;
+    pointer-events: none; /* Щоб клік мишкою проходив крізь іконку прямо в поле */
+    z-index: 1;
+}
+
+.search-box input {
+    position: relative;
+    width: 100%;
+    padding: 12px 20px 12px 45px; /* 45px зліва - це місце для нашої іконки */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05); /* Напівпрозорий фон */
+    color: #f1f5f9;
+    font-size: 1rem;
+    border-radius: 30px; /* Форма ідеальної капсули */
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease; /* Плавна анімація */
+    
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.search-box input::placeholder {
+    color: #64748b;
+}
+
+.search-box input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #38bdf8; /* Яскраво-блакитна рамка */
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); /* Неонове блакитне світіння */
+}
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Відстань між елементами */
+}
+
+.primary-btn {
+    /* Робимо соковитий блакитний градієнт */
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px; /* Капсула, щоб пасувала до пошуку */
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); 
+    
+    transition: all 0.3s ease; 
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px); /* Кнопка ніби піднімається назустріч курсору */
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5); /* Світіння стає ширшим і яскравішим */
+}
+
+.primary-btn:active {
+    transform: translateY(1px); /* Кнопка фізично "протискається" вниз */
+    box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+}
+
+.user-name {
+    font-weight: 600;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%; /* Робимо ідеальне коло */
+    object-fit: cover; /* Щоб фото не розтягувалося, якщо воно не квадратне */
+    border: 2px solid #38bdf8; /* Додаємо тонку блакитну рамочку для стилю */
+    padding: 2px; /* Відступ між фото і рамочкою */
+}
+
+.widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.widget-card {
+    background: rgba(255, 255, 255, 0.05); /* Напівпрозорий фон */
+    backdrop-filter: blur(12px); /* Розмиття фону (градієнту) під карткою */
+    -webkit-backdrop-filter: blur(12px); /* Для Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Тонка скляна рамочка */
+    border-radius: 16px; /* М'які кути */
+    padding: 24px;
+    transition: all 0.3s ease; /* Плавність для анімації наведення */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.widget-card:hover {
+    transform: translateY(-5px); /* Картка ніби підстрибує вгору */
+    background: rgba(255, 255, 255, 0.08); /* Трохи світлішає */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Тінь стає більшою */
+    border-color: rgba(56, 189, 248, 0.3); /* Рамочка ледь підсвічується блакитним */
+}
+
+.widget-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    color: #94a3b8; /* Тьмяний сіруватий колір для заголовка */
+    text-transform: uppercase; /* Робимо всі літери ВЕЛИКИМИ */
+    letter-spacing: 1px;
+}
+
+.widget-card .stat-number {
+    margin: 0 0 5px 0;
+    font-size: 2.5rem; /* Величезна цифра */
+    font-weight: 700;
+    color: #f1f5f9; /* Білий текст */
+}
+
+.widget-card span {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+}
+
+.widget-card progress {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 15px;
+    appearance: none; /* Вимикаємо стандартний, нудний дизайн браузера */
+}
+
+.widget-card progress::-webkit-progress-bar {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.widget-card progress::-webkit-progress-value {
+    background: linear-gradient(90deg, #38bdf8, #818cf8); /* Блакитно-фіолетовий градієнт */
+    border-radius: 4px;
+}
+.widget-card mark {
+    background-color: rgba(74, 222, 128, 0.15); 
+    
+    color: #4ade80; 
+    
+    padding: 4px 10px; 
+    
+    border-radius: 20px; 
+    
+    font-size: 0.8rem;
+    font-weight: 600;
+    
+    display: inline-block; 
+}
+.tasks-table-section {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 30px;
+    overflow-x: auto; /* Якщо таблиця не влізе на телефоні, з'явиться скрол */
+}
+
+.tasks-table caption {
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+}
+
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse; /* Злиття рамок комірок */
+    border: none; /* Прибираємо зовнішню рамку */
+    text-align: left;
+}
+
+.tasks-table th {
+    padding: 15px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #94a3b8; /* тьмяний сірий */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Лінія під шапкою */
+}
+
+.tasks-table td {
+    padding: 15px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Ледь помітна лінія між рядками */
+    vertical-align: middle;
+}
+
+.tasks-table td:first-child {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.tasks-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+.tasks-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03); /* Рядок ледь світлішає */
+}
+
+.tasks-table del {
+    color: #64748b; /* Робимо закреслений дедлайн тьмяним */
+}
+.tasks-table time {
+    color: #cbd5e1;
+}
+
+.tasks-table span[class^="status-"] {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px; /* Капсула */
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-done {
+    background-color: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+}
+
+.status-progress {
+    background-color: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+}
+
+.status-todo {
+    background-color: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+.tasks-table th {
+    padding: 15px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    text-align: left;
+    /* Чітка лінія під шапкою, яка відокремлює її від контенту */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
+}
+
+.tasks-table td {
+    padding: 15px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+}
+
+.tasks-table tbody tr:last-child td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+}
+
+.quick-note {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 30px;
+}
+
+.quick-note fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.quick-note legend {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+}
+
+.quick-note label {
+    display: block;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quick-note select,
+.quick-note textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05); /* Напівпрозорий фон */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    box-sizing: border-box; /* Щоб поля не вилазили за краї картки */
+    transition: all 0.3s ease;
+    margin-bottom: 20px; /* Відступ знизу (можна буде видалити <br> з HTML) */
+}
+.quick-note select option {
+    color: #f1f5f9; /* Залишаємо світлий текст */
+    background-color: #0f172a; /* Робимо темний фон (колір нашого body) */
+}
+.quick-note select:focus,
+.quick-note textarea:focus {
+    outline: none; /* Прибираємо стандартну чорну/синю рамку браузера */
+    border-color: #38bdf8; /* Блакитна рамка */
+    background: rgba(255, 255, 255, 0.1); /* Фон стає трохи світлішим */
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); /* Легке світіння */
+}
+
+.quick-note textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.quick-note button[type="submit"] {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px; /* Форма капсули */
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+.quick-note button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+#taskModal {
+    background: #0f172a; /* Темний фон, як у body */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 30px;
+    color: #f1f5f9;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); /* Глибока тінь */
+}
+
+#taskModal::backdrop {
+    background: rgba(0, 0, 0, 0.6); /* Напівпрозорий чорний */
+    backdrop-filter: blur(5px); /* Розмиваємо весь дашборд на задньому плані */
+    -webkit-backdrop-filter: blur(5px);
+}
+
+#taskModal h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #f8fafc;
+}
+
+#taskModal p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+#taskModal input[type="text"] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+}
+
+#taskModal input[type="text"]:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+#taskModal button[type="submit"] {
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    margin-right: 10px; /* Відступ між кнопками */
+}
+
+#taskModal button[type="submit"]:hover {
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+}
+
+#closeModalBtn {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#closeModalBtn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0 0 0; /* Відступ зверху від назви "DevDash Pro" */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Відстань між пунктами меню */
+}
+
+.sidebar-nav a {
+    display: flex; /* Дозволяє рознести текст і бейджик по різних краях */
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none; /* Прибираємо синє підкреслення */
+    color: #94a3b8; /* Тьмяний сіро-синій колір у стані спокою */
+    padding: 12px 16px;
+    border-radius: 12px; /* М'які кути */
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease; /* Плавність для анімації */
+}
+
+.sidebar-nav a:hover {
+    background: rgba(255, 255, 255, 0.08); /* З'являється напівпрозорий фон */
+    color: #f8fafc; /* Текст стає яскраво-білим */
+    transform: translateX(5px); /* Легкий зсув вправо для динаміки */
+}
+
+.sidebar-nav .badge {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px; /* Форма капсули */
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); /* Червоне світіння */
+}
+/* ========================================== */
+/* АДАПТИВНІСТЬ ДЛЯ МОБІЛЬНИХ (МЕНШЕ 768px)   */
+/* ========================================== */
+
+@media (max-width: 768px) {
+    /* 1. Ламаємо сітку: замість 2 колонок робимо 1 суцільну */
+    .app-container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+
+    /* 2. Сайдбар (ліве меню) стає верхньою шапкою */
+    .sidebar {
+        height: auto;
+        position: relative;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    /* Ховаємо зайвий текст, щоб звільнити місце */
+    .sidebar p { display: none; } /* Версія v.2.4.0 зникає */
+    
+    /* Меню перетворюємо на сітку кнопок 2х2 */
+    .sidebar-nav ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .sidebar-nav a {
+        justify-content: center;
+        padding: 10px;
+        font-size: 0.85rem;
+        background: rgba(255, 255, 255, 0.03); /* Легкий фон для кнопок меню */
+    }
+
+    /* 3. Верхня панель (Пошук + Профіль) */
+    .top-header {
+        flex-direction: column; /* Ставимо елементи один під одним */
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* 4. Блок профілю: розносимо кнопку і аватар по краях */
+    .user-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .user-name {
+        display: none; /* Ховаємо ім'я, залишаємо тільки аватарку */
+    }
+
+    .primary-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* 5. Віджети статистики: ставимо по одному в ряд */
+    .widgets-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* 6. Таблиця завдань: додаємо горизонтальний скрол, якщо вона не влазить */
+    .tasks-table-section {
+        padding: 15px;
+        overflow-x: auto;
+    }
+    
+    /* Робимо шрифти в таблиці трохи меншими */
+    .tasks-table th, 
+    .tasks-table td {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+}
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <aside class="sidebar">
+    <header class="sidebar-header">
+    <h2>DevDash Pro</h2>
+    <small>v. 2.4.0</small>
+    </header>
+
+    <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#">Головна</a></li>
+                    <li><a href="#">Мої завдання</a></li>
+                    <li><a href="#">Аналітика</a></li>
+                    <li><a href="#">Повідомлення <span class="badge">3</span></a></li>
+                    <li><a href="#">Налаштування</a></li>
+                </ul>
+            </nav>
+    </aside>
+
+    <div class="main-wrapper">
+
+        <header class="top-header">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="search" list="search-hints" placeholder="Шукати проєкти, таски або колег...">
+                <datalist id="search-hints">
+                    <option value="Фікс багів на головній"></option>
+                    <option value="Дизайн нової сторінки"></option>
+                    <option value="Оновити документацію"></option>
+                </datalist>
+            </div>
+
+            <div class="user-action">
+                <button id="openModalBtn" class="primary-btn">+ Нове завдання</button>
+                <span class="user-name">Назар Розробник</span>
+                <img src="images\photo_avtora.jpg" alt="Фото профілю" class="avatar">
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+
+                <section class="widgets">
+                    <h2>Огляд проєкту</h2>
+                    
+                    <div class="widgets-grid">
+                        <article class="widget-card">
+                            <h3>Виконано</h3>
+                            <p class="stat-number">24</p>
+                            <span>завдання цього тижня</span>
+                            <br>
+                            <progress value="80" max="100"></progress>
+                        </article>
+
+                        <article class="widget-card">
+                            <h3>В процесі</h3>
+                            <p class="stat-number">5</p>
+                            <span>активних тасок</span>
+                            <br>
+                            <progress value="30" max="100"></progress>
+                        </article>
+
+                        <article class="widget-card">
+                            <h3>Відгуки клієнтів</h3>
+                            <p class="stat-number">4.8 / 5.0</p>
+                            <span><mark>Покращено на 12%</mark></span>
+                        </article>
+                    </div>
+                </section>
+
+                <hr>
+
+                <section class="tasks-table-section">
+                    <table class="tasks-table">
+                        <caption>Останні завдання</caption>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Назва завдання</th>
+                                <th>Статус</th>
+                                <th>Дедлайн</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1042</td>
+                                <td>Оновити дизайн сторінки 404</td>
+                                <td><span class="status-done">Виконано</span></td>
+                                <td><del>10 Березня</del></td>
+                            </tr>
+                            <tr>
+                                <td>#1043</td>
+                                <td>Налаштувати інтеграцію з API</td>
+                                <td><span class="status-progress">В роботі</span></td>
+                                <td><time datetime="2026-03-15">15 Березня 2026</time></td>
+                            </tr>
+                            <tr>
+                                <td>#1044</td>
+                                <td>Виправити <abbr title="Cascading Style Sheets">CSS</abbr> баг у футері</td>
+                                <td><span class="status-todo">Очікує</span></td>
+                                <td><time datetime="2026-03-20">20 Березня 2026</time></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <br>
+
+                <section class="quick-note">
+                    <form action="#" method="POST">
+                        <fieldset>
+                            <legend>Записати ідею</legend>
+                            
+                            <label for="category">Категорія:</label>
+                            <select id="category" name="category">
+                                <option value="frontend">Фронтенд</option>
+                                <option value="backend">Бекенд</option>
+                                <option value="design">Дизайн</option>
+                                <option value="other">Інше</option>
+                            </select>
+
+                            <textarea name="note" rows="4" style="width: 100%;" placeholder="Опиши свою ідею або знайдений баг тут..."></textarea>
+
+                            <button type="submit">Зберегти нотатку</button>
+                        </fieldset>
+                    </form>
+                </section>
+
+            </main>
+
+        <footer class="app-footer">
+            <small>&copy; 2026 DevDash Pro. Всі права захищено. Створено з ❤️ в Італії.</small>
+            <br>
+            <a href="#">Політика конфіденційності</a>
+            <a href="#">Умови використання</a>
+        </footer>
+    </div>
+</div>
+<dialog id="taskModal">
+    <h2>Створення нового завдання</h2>
+    <p>Будь ласка, заповніть деталі нижче. Обов'язкові поля позначені зірочкою (*).</p>
+
+    <form method="dialog">
+        <label>Назва завдання *</label><br>
+        <input type="text" required><br><br>
+
+        <label>Пріоритет:</label>
+        <label><input type="radio" name="priority" value="low">Низький</label>
+        <label><input type="radio" name="priority" value="medium" checked>Середній</label>
+        <label><input type="radio" name="priority" value="high"><strong></strong>Високий</label>
+        <br><br>
+
+        <button type="submit">Додати</button>
+        <button type="button" id="closeModalBtn">Скасувати</button>
+    </form>
+</dialog>
+
+
+<script>
+        const modal = document.getElementById('taskModal');
+        const openBtn = document.getElementById('openModalBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        // Відкрити модалку
+        openBtn.addEventListener('click', () => {
+            modal.showModal();
+        });
+
+        // Закрити модалку кнопкою "Скасувати"
+        closeBtn.addEventListener('click', () => {
+            modal.close();
+        });
+    </script>
+    <script>
+    // Чекаємо, поки завантажиться весь HTML
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        var text = "DevDash Pro"; // Текст, який буде друкуватися (можеш змінити на свій)
+        var delay = 100; // Швидкість друкування (в мілісекундах)
+        
+        // Знаходимо наш заголовок h2
+        var elem = document.querySelector('.sidebar-header h2');
+        
+        // Очищаємо старий статичний текст перед початком анімації
+        elem.innerHTML = "";
+        
+        // Твоя функція для ефекту друкування
+        var print_text = function(text, elem, delay) {
+            if(text.length > 0) {
+                elem.innerHTML += text[0];
+                setTimeout(
+                    function() {
+                        print_text(text.slice(1), elem, delay); 
+                    }, delay
+                );
+            }
+        }
+        
+        // Запускаємо магію!
+        print_text(text, elem, delay);
+
+    });
+</script>
+</body>
+</html>
